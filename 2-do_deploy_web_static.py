@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 # Fabfile to distribute an archive to a web server.
 import os.path
-from fabric.api import env
-from fabric.api import put
-from fabric.api import run
+from fabric.api import env, put, run
 
 env.hosts = ["3.80.18.189", "18.209.224.4"]
 
@@ -19,31 +17,41 @@ def do_deploy(archive_path):
     """
     if os.path.isfile(archive_path) is False:
         return False
+
     file = archive_path.split("/")[-1]
     name = file.split(".")[0]
 
+    # Upload the archive to the /tmp/ directory of the web server
     if put(archive_path, "/tmp/{}".format(file)).failed is True:
         return False
-    if run("rm -rf /data/web_static/releases/{}/".
-           format(name)).failed is True:
+
+    # Uncompress the archive to the folder /data/web_static/releases/<archive filename without extension>
+    if run("rm -rf /data/web_static/releases/{}/".format(name)).failed is True:
         return False
-    if run("mkdir -p /data/web_static/releases/{}/".
-           format(name)).failed is True:
+    if run("mkdir -p /data/web_static/releases/{}/".format(name)).failed is True:
         return False
-    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
-           format(file, name)).failed is True:
+    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".format(file, name)).failed is True:
         return False
+
+    # Delete the archive from the web server
     if run("rm /tmp/{}".format(file)).failed is True:
         return False
-    if run("mv /data/web_static/releases/{}/web_static/* "
-           "/data/web_static/releases/{}/".format(name, name)).failed is True:
+
+    # Move contents to the proper location
+    if run("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}/".format(name, name)).failed is True:
         return False
-    if run("rm -rf /data/web_static/releases/{}/web_static".
-           format(name)).failed is True:
+
+    # Remove the web_static folder
+    if run("rm -rf /data/web_static/releases/{}/web_static".format(name)).failed is True:
         return False
+
+    # Remove the old symbolic link
     if run("rm -rf /data/web_static/current").failed is True:
         return False
-    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
-           format(name)).failed is True:
+
+    # Create a new symbolic link
+    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".format(name)).failed is True:
         return False
+
     return True
+
