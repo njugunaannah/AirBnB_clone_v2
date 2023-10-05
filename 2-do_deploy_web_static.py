@@ -8,7 +8,7 @@ from os import path
 
 env.hosts = ['3.80.18.189', '18.209.224.4']
 env.user = 'ubuntu'
-env.key_filename = '~/.ssh/njuguna_430_wsl'
+env.key_filename = '~/.ssh/njuguna_wsl_430'
 
 
 def do_deploy(archive_path):
