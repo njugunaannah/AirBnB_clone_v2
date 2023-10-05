@@ -32,9 +32,11 @@ def do_deploy(archive_path):
         # Upload the archive to the /tmp/ directory of the web server
         put(archive_path, '/tmp/')
 
-        # Extract the archive to the folder /data/web_static/releases/<archive filename without extension>
+        """Extract the archive to the folder
+        /data/web_static/releases/<archive filename without extension>"""
         file_name = archive_path.split('/')[-1]
-        folder_name = "/data/web_static/releases/{}".format(file_name.split('.')[0])
+        folder_name =
+        "/data/web_static/releases/{}".format(file_name.split('.')[0])
         run("mkdir -p {}".format(folder_name))
         run("tar -xzf /tmp/{} -C {}".format(file_name, folder_name))
 
@@ -58,4 +60,3 @@ def do_deploy(archive_path):
 
     except Exception as e:
         return False
-
